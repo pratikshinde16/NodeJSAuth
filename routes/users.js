@@ -3,12 +3,13 @@ var router = express.Router();
 var mongoose=require('mongoose')
 const{dbUrl}=require('../dbConfig')
 const{userModel}=require('../Schema/UserSchema')
-const{hashPassword,hashCompare,createToken,decodeToken}=require('../common/auth')
+const{hashPassword,hashCompare,createToken,decodeToken,validate,roleAdmin}=require('../common/auth')
 
 mongoose.connect(dbUrl)
 
-router.get('/all',async(req,res)=>{
+router.get('/all',validate,roleAdmin,async(req,res)=>{
   try {
+  
     let users=await userModel.find()
     res.status(200).send({Data:users})
  
@@ -49,9 +50,9 @@ router.post('/login',async(req,res)=>{
             {firstName:user.firstName,
              lastName:user.lastName,
              email:user.email,
-             mobile:user.mobile
+             mobile:user.mobile,
+             role:user.role
             })
-            decodeToken(token)
          res.status(200).send({message:"Login Successfull!",token})
       
         }
